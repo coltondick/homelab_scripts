@@ -64,7 +64,7 @@ This directory contains a script for resetting word counts in a Discord bot.
 ### Script:
 
 - **reset_word_count.py**  
-  Resets word counts for users in a Discord bot. This is likely used for managing some sort of leaderboard or activity tracker in a Discord server.
+  Resets word counts for users in a Discord bot. This is li used for managing a word count leaderboard in a Discord server.
 
 ### Instructions:
 
