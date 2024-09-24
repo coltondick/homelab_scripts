@@ -16,6 +16,9 @@ API_URL = "https://api.github.com/repos/yuliskov/SmartTube/releases/latest"
 APK_PATH = "/tmp/smarttube_latest.apk"
 LOG_FILE = "/var/log/smarttube_install.log"
 LOG_MAX_SIZE = 10 * 1024 * 1024  # 10 MB
+VERSION_FILE = (
+    "/var/log/smarttube_last_version.txt"  # File to store last installed version
+)
 
 os.environ["PATH"] = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin"
 
@@ -75,6 +78,20 @@ def install_apk():
     )
 
 
+# Read the last installed version from the version file
+def get_last_installed_version():
+    if os.path.exists(VERSION_FILE):
+        with open(VERSION_FILE, "r") as file:
+            return file.read().strip()
+    return None
+
+
+# Store the latest installed version to the version file
+def store_last_installed_version(version):
+    with open(VERSION_FILE, "w") as file:
+        file.write(version)
+
+
 # Main function
 def main():
     # Add a separator at the beginning of each execution
@@ -92,9 +109,20 @@ def main():
         apk_version = apk_name.split("_")[2]
         logging.info(f"Found APK version: {apk_version}")
 
+        # Check if the current version matches the last installed version
+        last_installed_version = get_last_installed_version()
+        if last_installed_version == apk_version:
+            logging.info(
+                f"APK version {apk_version} is already installed. Skipping download and installation."
+            )
+            return
+
+        # Download and install the APK
         download_apk(apk_url)
         install_apk()
 
+        # Store the newly installed version
+        store_last_installed_version(apk_version)
         logging.info(f"APK version {apk_version} installed successfully!")
     except Exception as e:
         logging.error(f"Error: {e}")
